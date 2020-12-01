@@ -1,6 +1,6 @@
 package me.bbff.aoc.day1
 
-val rawInput = """1772
+const val rawInput = """1772
 1065
 1827
 1671
@@ -200,22 +200,24 @@ val rawInput = """1772
 1769
 1691
 1821"""
-val input = rawInput.splitToSequence('\n').map { it.toInt() }.toList()
 
-fun part1(report: Iterable<Int> = input): Int {
+
+val input = rawInput.splitToSequence('\n').map { it.toUInt() }.toList()
+
+fun part1(report: Iterable<UInt> = input): UInt {
     for (i in report) {
         for (i2 in report) {
-            if (i + i2 == 2020) return i * i2
+            if (i + i2 == 2020u) return i * i2
         }
     }
     throw IllegalStateException()
 }
 
-fun part2(report: Iterable<Int> = input): Int {
+fun part2(report: Iterable<UInt> = input): UInt {
     for (i in report) {
         for (i2 in report) {
             for (i3 in report) {
-                if (i + i2 + i3 == 2020) return i * i2 * i3
+                if (i + i2 + i3 == 2020u) return i * i2 * i3
             }
         }
     }
