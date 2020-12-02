@@ -1,5 +1,5 @@
-import me.bbff.aoc.day1.part2
+import me.bbff.aoc.day2.part1
 
 fun main() {
-    println(part2())
+    println(part1())
 }
