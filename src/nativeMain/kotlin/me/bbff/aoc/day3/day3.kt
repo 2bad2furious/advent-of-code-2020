@@ -3,74 +3,26 @@ package me.bbff.aoc.day3
 import me.bbff.utils.countUnsigned
 import me.bbff.utils.multiply
 
-enum class Location {
-    TREE, NOT_TREE;
-
-    companion object {
-        fun whetherTree(isTree: Boolean): Location = when (isTree) {
-            true -> TREE
-            else -> NOT_TREE
-        }
-    }
-}
-
-data class Step(val x: UInt, val y: UInt)
-data class Trees(private val map: Map<UInt, Map<UInt, Location>>) {
-
-    val height = map.size.toUInt()
-
-    fun getLocation(x: UInt, y: UInt): Location {
-        val row = map.getValue(y)
-        return row.getValue(x % row.size.toUInt())
-    }
-
-    fun getAllLocations(step: Step): Sequence<Location> = sequence {
-        var x = 0u
-        var y = 0u
-
-        while (y < height) {
-            yield(getLocation(x, y))
-            x += step.x
-            y += step.y
-        }
-    }
-
-    companion object {
-        val ofRawInput by lazy { of(rawInput) }
-
-        fun of(str: String): Trees {
-            val map = str.splitToSequence('\n')
-                .withIndex()
-                .associate { (y, row: String) ->
-                    y.toUInt() to row.withIndex().associate { (x, col) ->
-                        x.toUInt() to Location.whetherTree(col == '#')
-                    }
-                }
-            return Trees(map)
-        }
-    }
-}
-
-fun part1(step: Step = Step(3u, 1u), trees: Trees = Trees.ofRawInput): UInt {
-    return trees
-        .getAllLocations(step)
-        .countUnsigned { it == Location.TREE }
-}
-
-fun part2(steps: Sequence<Step> = defaultPart2Sequence, trees: Trees = Trees.ofRawInput): ULong {
-    return steps
-        .map { part1(it, trees) }
-        .multiply()
+val defaultPart1Slope = Slope(3u, 1u)
+fun part1(slope: Slope = defaultPart1Slope, map: Map = Map.ofRawInput): UInt {
+    return map
+        .getAllPositionsFor(slope)
+        .countUnsigned { it == Position.TREE }
 }
 
 val defaultPart2Sequence = sequenceOf(
-    Step(1u, 1u),
-    Step(3u, 1u),
-    Step(5u, 1u),
-    Step(7u, 1u),
-    Step(1u, 2u)
+    Slope(1u, 1u),
+    defaultPart1Slope,
+    Slope(5u, 1u),
+    Slope(7u, 1u),
+    Slope(1u, 2u)
 )
 
+fun part2(steps: Sequence<Slope> = defaultPart2Sequence, map: Map = Map.ofRawInput): ULong {
+    return steps
+        .map { part1(it, map) }
+        .multiply()
+}
 
 const val rawInput = """..#..#......###.#...#......#..#
 ...#.....#...#...#..........#..
@@ -395,3 +347,5 @@ const val rawInput = """..#..#......###.#...#......#..#
 #...#.#......#.................
 ..#..#.....#....##...#..###....
 .#...#.........#.#.##.#........"""
+
+val Map.Companion.ofRawInput get() = of(rawInput)
