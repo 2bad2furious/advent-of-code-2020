@@ -1,7 +1,20 @@
 package me.bbff.aoc.day2
 
-val regex = """(\d+)-(\d+) (\w): (\w+)""".toRegex()
-val rawInput = """1-7 q: qqqqxvqrkbqqztlqlzq
+import me.bbff.utils.countUnsigned
+
+fun part1(passwords: Sequence<PasswordRecord> = records): UInt {
+    return passwords.countUnsigned {
+        it.password.countUnsigned { c -> c == it.char } in (it.i1..it.i2)
+    }
+}
+
+fun part2(passwords: Sequence<PasswordRecord> = records): UInt {
+    return passwords.countUnsigned {
+        (it.password[it.i1.toInt() - 1] == it.char) xor (it.password[it.i2.toInt() - 1] == it.char)
+    }
+}
+
+const val rawInput = """1-7 q: qqqqxvqrkbqqztlqlzq
 1-3 q: cqbm
 15-16 h: hhhhhhhhhhhhhhbsh
 4-16 x: xvbxswpnvxtnfjrxxx
@@ -1001,36 +1014,4 @@ val rawInput = """1-7 q: qqqqxvqrkbqqztlqlzq
 6-11 j: jmkljhjjvjmfmjpj
 2-4 f: xhtkdf
 5-14 x: frqqxljjwsxndx"""
-val input = rawInput.splitToSequence('\n')
-
-data class PasswordRecordPart1(
-    val minCount: UInt,
-    val maxCount: UInt,
-    val char: Char,
-    val password: String
-) {
-    val isValid = password.count { it == char }.toUInt() in minCount..maxCount
-}
-
-data class PasswordRecordPart2(
-    val i1: UInt,
-    val i2: UInt,
-    val char: Char,
-    val password: String
-) {
-    val isValid get() = (password[i1.toInt() - 1] == char) xor (password[i2.toInt() - 1] == char)
-}
-
-inline fun <R> getMapped(crossinline convert: (UInt, UInt, Char, String) -> R) = input
-    .map {
-        val values = regex.matchEntire(it)!!.groupValues
-        convert(values[1].toUInt(), values[2].toUInt(), values[3].single(), values[4])
-    }.asIterable()
-
-fun part1(passwords: Iterable<PasswordRecordPart1> = getMapped(::PasswordRecordPart1)): UInt {
-    return passwords.count { it.isValid }.toUInt()
-}
-
-fun part2(passwords: Iterable<PasswordRecordPart2> = getMapped(::PasswordRecordPart2)): UInt {
-    return passwords.count { it.isValid }.toUInt()
-}
+val records = rawInput.splitToSequence('\n').map(PasswordRecord::parseFrom)
