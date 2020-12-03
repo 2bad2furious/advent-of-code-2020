@@ -15,3 +15,5 @@ inline fun CharSequence.countUnsigned(predicate: (Char) -> Boolean): UInt {
 operator fun String.get(ui: UInt): Char {
     return get(ui.toInt())
 }
+
+fun Sequence<UInt>.multiply(): ULong = fold(1uL) { acc, uInt -> acc * uInt }
