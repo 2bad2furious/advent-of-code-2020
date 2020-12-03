@@ -7,7 +7,7 @@ val defaultPart1Slope = Slope(3u, 1u)
 fun part1(slope: Slope = defaultPart1Slope, map: Map = Map.ofRawInput): UInt {
     return map
         .getAllPositionsFor(slope)
-        .countUnsigned { it == Position.TREE }
+        .countUnsigned { pos -> pos == Position.TREE }
 }
 
 val defaultPart2Sequence = sequenceOf(
@@ -18,9 +18,9 @@ val defaultPart2Sequence = sequenceOf(
     Slope(1u, 2u)
 )
 
-fun part2(steps: Sequence<Slope> = defaultPart2Sequence, map: Map = Map.ofRawInput): ULong {
-    return steps
-        .map { part1(it, map) }
+fun part2(slopes: Sequence<Slope> = defaultPart2Sequence, map: Map = Map.ofRawInput): ULong {
+    return slopes
+        .map { slope -> part1(slope, map) }
         .multiply()
 }
 
