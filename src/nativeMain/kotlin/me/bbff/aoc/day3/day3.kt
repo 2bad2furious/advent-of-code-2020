@@ -1,15 +1,38 @@
 package me.bbff.aoc.day3
 
+import me.bbff.utils.countUnsigned
 import me.bbff.utils.multiply
 
+enum class Location {
+    TREE, NOT_TREE;
+
+    companion object {
+        fun whetherTree(isTree: Boolean): Location = when (isTree) {
+            true -> TREE
+            else -> NOT_TREE
+        }
+    }
+}
+
 data class Step(val x: UInt, val y: UInt)
-data class Trees(private val map: Map<UInt, Map<UInt, Boolean>>) {
+data class Trees(private val map: Map<UInt, Map<UInt, Location>>) {
 
     val height = map.size.toUInt()
 
-    fun containsTree(x: UInt, y: UInt): Boolean {
+    fun getLocation(x: UInt, y: UInt): Location {
         val row = map.getValue(y)
         return row.getValue(x % row.size.toUInt())
+    }
+
+    fun getAllLocations(step: Step): Sequence<Location> = sequence {
+        var x = 0u
+        var y = 0u
+
+        while (y < height) {
+            yield(getLocation(x, y))
+            x += step.x
+            y += step.y
+        }
     }
 
     companion object {
@@ -20,7 +43,7 @@ data class Trees(private val map: Map<UInt, Map<UInt, Boolean>>) {
                 .withIndex()
                 .associate { (y, row: String) ->
                     y.toUInt() to row.withIndex().associate { (x, col) ->
-                        x.toUInt() to (col == '#')
+                        x.toUInt() to Location.whetherTree(col == '#')
                     }
                 }
             return Trees(map)
@@ -28,18 +51,16 @@ data class Trees(private val map: Map<UInt, Map<UInt, Boolean>>) {
     }
 }
 
-fun part1(step: Step, trees: Trees = Trees.ofRawInput): UInt {
-    var counter = 0u
-    var x = 0u
-    var y = 0u
+fun part1(step: Step = Step(3u, 1u), trees: Trees = Trees.ofRawInput): UInt {
+    return trees
+        .getAllLocations(step)
+        .countUnsigned { it == Location.TREE }
+}
 
-    while (y < trees.height) {
-        if (trees.containsTree(x, y)) counter++
-        x += step.x
-        y += step.y
-    }
-
-    return counter
+fun part2(steps: Sequence<Step> = defaultPart2Sequence, trees: Trees = Trees.ofRawInput): ULong {
+    return steps
+        .map { part1(it, trees) }
+        .multiply()
 }
 
 val defaultPart2Sequence = sequenceOf(
@@ -50,9 +71,6 @@ val defaultPart2Sequence = sequenceOf(
     Step(1u, 2u)
 )
 
-fun part2(steps: Sequence<Step> = defaultPart2Sequence, trees: Trees = Trees.ofRawInput): ULong {
-    return steps.map { part1(it, trees) }.multiply()
-}
 
 const val rawInput = """..#..#......###.#...#......#..#
 ...#.....#...#...#..........#..
