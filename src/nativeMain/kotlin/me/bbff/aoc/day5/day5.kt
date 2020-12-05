@@ -1,52 +1,52 @@
 package me.bbff.aoc.day5
 
-data class Location(val row: ULong, val column: ULong) {
+data class Location(val row: UInt, val column: UInt) {
     val seatId get() = seatId(row, column)
 
     companion object {
-        fun seatId(row: ULong, col: ULong) = (row * 8u) + col
+        fun seatId(row: UInt, col: UInt) = (row * 8u) + col
         fun parse(str: String): Location {
-            val row = BitSet(7) { i -> str[i] == 'B' }.toULong()
-            val column = BitSet(3) { i -> str[7 + i] == 'R' }.toULong()
+            val row = BitSet(7) { i -> str[i] == 'B' }.toUInt()
+            val column = BitSet(3) { i -> str[7 + i] == 'R' }.toUInt()
             return Location(row, column)
         }
     }
 }
 
-fun part1(input: Sequence<Location> = parsedInput): ULong {
+fun part1(input: Sequence<Location> = parsedInput): UInt {
     return input.maxOf { location -> location.seatId }
 }
 
-fun part2(input: Sequence<Location> = parsedInput): ULong {
+fun part2(input: Sequence<Location> = parsedInput): UInt {
     try {
-        val seats = mutableMapOf<ULong, MutableSet<ULong>>()
+        val seats = mutableMapOf<UInt, MutableSet<UInt>>()
         for ((row, col) in input) {
             seats.getOrPut(row, ::mutableSetOf).add(col)
         }
 
-        val rowIndices = (0uL..7uL)
-        val fullRow = rowIndices.toList()
+        val rowIndices = (0u..7u)
+        val fulRow = rowIndices.toList()
 
         return seats
             .asSequence()
             .filter { (_, cols) -> cols.size == 7 }
             .map { (row, cols) ->
-                val missing = (fullRow - cols).single()
+                val missing = (fulRow - cols).single()
                 Location.seatId(row, missing)
             }
             .single()
     } catch (e: Throwable) {
         e.printStackTrace()
-        return 0uL
+        return 0u
     }
 }
 
-fun BitSet.toULong(): ULong {
-    var res = 0uL
+fun BitSet.toUInt(): UInt {
+    var res = 0u
     val maxIndex = size - 1
     for (i in 0 until size) {
         if (this[i])
-            res += 1uL shl (maxIndex - i)
+            res += 1u shl (maxIndex - i)
     }
     return res
 }
