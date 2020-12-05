@@ -6,8 +6,8 @@ data class Location(val row: UInt, val column: UInt) {
     companion object {
         fun seatId(row: UInt, col: UInt) = (row * 8u) + col
         fun parse(str: String): Location {
-            val row = BitSet(7) { i -> str[i] == 'B' }.toUInt()
-            val column = BitSet(3) { i -> str[7 + i] == 'R' }.toUInt()
+            val row = uInt(7u) { i -> str[i] == 'B' }
+            val column = uInt(3u) { i -> str[7 + i] == 'R' }
             return Location(row, column)
         }
     }
@@ -36,11 +36,11 @@ fun part2(input: Sequence<Location> = parsedInput): UInt {
         .single()
 }
 
-fun BitSet.toUInt(): UInt {
+inline fun uInt(bits: UInt, is1: (Int) -> Boolean): UInt {
     var res = 0u
-    val maxIndex = size - 1
-    for (i in 0 until size) {
-        if (this[i])
+    val maxIndex = bits.toInt() - 1
+    for (i in 0..maxIndex) {
+        if (is1(i))
             res += 1u shl (maxIndex - i)
     }
     return res
