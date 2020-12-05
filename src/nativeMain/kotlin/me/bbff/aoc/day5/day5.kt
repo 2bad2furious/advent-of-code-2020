@@ -18,27 +18,22 @@ fun part1(input: Sequence<Location> = parsedInput): UInt {
 }
 
 fun part2(input: Sequence<Location> = parsedInput): UInt {
-    try {
-        val seats = mutableMapOf<UInt, MutableSet<UInt>>()
-        for ((row, col) in input) {
-            seats.getOrPut(row, ::mutableSetOf).add(col)
-        }
-
-        val rowIndices = (0u..7u)
-        val fulRow = rowIndices.toList()
-
-        return seats
-            .asSequence()
-            .filter { (_, cols) -> cols.size == 7 }
-            .map { (row, cols) ->
-                val missing = (fulRow - cols).single()
-                Location.seatId(row, missing)
-            }
-            .single()
-    } catch (e: Throwable) {
-        e.printStackTrace()
-        return 0u
+    val seats = mutableMapOf<UInt, MutableSet<UInt>>()
+    for ((row, col) in input) {
+        seats.getOrPut(row, ::mutableSetOf).add(col)
     }
+
+    val rowIndices = (0u..7u)
+    val fulRow = rowIndices.toList()
+
+    return seats
+        .asSequence()
+        .filter { (_, cols) -> cols.size == 7 }
+        .map { (row, cols) ->
+            val missing = (fulRow - cols).single()
+            Location.seatId(row, missing)
+        }
+        .single()
 }
 
 fun BitSet.toUInt(): UInt {
