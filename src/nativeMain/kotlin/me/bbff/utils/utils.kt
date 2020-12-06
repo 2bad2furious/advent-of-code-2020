@@ -17,3 +17,30 @@ operator fun String.get(ui: UInt): Char {
 }
 
 fun Sequence<UInt>.multiply(): ULong = fold(1uL) { acc, uInt -> acc * uInt }
+
+fun <T> Sequence<Iterable<T>>.intersect(): Set<T> {
+    val iterator = iterator()
+    if (!iterator.hasNext()) return setOf()
+
+    val intersect = iterator.next().toMutableSet()
+    while (iterator.hasNext()) {
+        intersect.retainAll(iterator.next())
+    }
+    return intersect
+}
+
+fun Sequence<CharSequence>.joinToCharSet(): Set<Char> {
+    return buildSet {
+        for (seq in this@joinToCharSet) {
+            for (char in seq) {
+                add(char)
+            }
+        }
+    }
+    // return flatMap { person -> person.asIterable() }.toSet()
+}
+
+fun CharSequence.toSet(): Set<Char> = buildSet {
+    for (ch in this@toSet)
+        add(ch)
+}

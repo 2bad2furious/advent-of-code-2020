@@ -29,6 +29,7 @@ kotlin {
     sourceSets {
         all {
             languageSettings.useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
+            languageSettings.useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
         }
         val nativeMain by getting
         val nativeTest by getting
