@@ -1,24 +1,24 @@
 package me.bbff.aoc.day6
 
-import me.bbff.utils.intersect
 import me.bbff.utils.joinToCharSet
+import me.bbff.utils.reduceWithFirstAsAccumulator
 
-fun part1(input: Sequence<Sequence<String>> = rawInput.parsed): ULong {
+fun part1(input: Sequence<Sequence<String>> = rawInput.parsed): UInt {
     return input
         .sumOf { group ->
             group
                 .joinToCharSet()
-                .size.toULong()
+                .size.toUInt()
         }
 }
 
-fun part2(input: Sequence<Sequence<String>> = rawInput.parsed): ULong {
+fun part2(input: Sequence<Sequence<String>> = rawInput.parsed): UInt {
     return input
         .sumOf { group ->
             group
                 .map { person -> person.asIterable() }
-                .intersect()
-                .size.toULong()
+                .reduceWithFirstAsAccumulator({ it.toMutableSet() }) { acc, i -> acc.retainAll(i) }!! // this is used in intersect
+                .size.toUInt()
         }
 }
 

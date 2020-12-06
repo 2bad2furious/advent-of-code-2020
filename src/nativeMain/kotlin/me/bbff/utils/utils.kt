@@ -18,15 +18,15 @@ operator fun String.get(ui: UInt): Char {
 
 fun Sequence<UInt>.multiply(): ULong = fold(1uL) { acc, uInt -> acc * uInt }
 
-fun <T> Sequence<Iterable<T>>.intersect(): Set<T> {
+fun <T, R> Sequence<T>.reduceWithFirstAsAccumulator(initial: (T) -> R, operation: (R, T) -> Unit): R? {
     val iterator = iterator()
-    if (!iterator.hasNext()) return setOf()
+    if (!iterator.hasNext()) return null
 
-    val intersect = iterator.next().toMutableSet()
+    val acc: R = initial(iterator.next())
     while (iterator.hasNext()) {
-        intersect.retainAll(iterator.next())
+        operation(acc, iterator.next())
     }
-    return intersect
+    return acc
 }
 
 fun Sequence<CharSequence>.joinToCharSet(): Set<Char> {
