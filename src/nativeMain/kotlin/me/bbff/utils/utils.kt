@@ -45,7 +45,7 @@ fun CharSequence.toSet(): Set<Char> = buildSet {
         add(ch)
 }
 
-fun <T> List<T>.subListTillEnd(fromIndex: Int) = subList(fromIndex, size)
+fun <T> List<T>.subListTillEndFrom(fromIndex: Int) = subList(fromIndex, size)
 fun <T> List<T>.subListOfFirst(n: Int) = subList(0, n + 1)
 
 fun <T : Comparable<T>> Iterable<T>.findMinMax(): Pair<T, T> {
@@ -66,3 +66,12 @@ fun <T : Comparable<T>> Iterable<T>.findMinMax(): Pair<T, T> {
 fun Iterable<ULong>.sumMinAndMax(): ULong {
     return findMinMax().let { (min, max) -> min + max }
 }
+
+fun <T> List<T>.shrinkingListsRight(): Sequence<List<T>> = sequence {
+    for (i in indices)
+        yield(subListTillEndFrom(i))
+}
+
+
+// TODO optimize - no need to create indexedValue, which "filterIndexed" does
+fun <T> Sequence<T>.firstIndexed(predicate: (Int, T) -> Boolean): T = filterIndexed(predicate).first()

@@ -1,18 +1,16 @@
 package me.bbff.aoc.day9
 
-import me.bbff.utils.subListOfFirst
-import me.bbff.utils.subListTillEnd
-import me.bbff.utils.sumMinAndMax
+import me.bbff.utils.*
 
 fun part2(input: List<ULong> = realInput.parsed, sumTo: ULong = 138879426u): ULong {
-    for (i in input.indices) {
+    for (remainingNumbers in input.shrinkingListsRight()) {
         var sum = 0uL
-        val remainingNumbers = input.subListTillEnd(i)
-        summerLoop@ for (lastIndexOfBeingSummed in remainingNumbers.indices) { // TODO rename xd
-            sum += remainingNumbers[lastIndexOfBeingSummed]
+
+        summerLoop@ for (i in remainingNumbers.indices) { // TODO rename loop xd
+            sum += remainingNumbers[i]
 
             when {
-                sum == sumTo -> return remainingNumbers.subListOfFirst(lastIndexOfBeingSummed).sumMinAndMax()
+                sum == sumTo -> return remainingNumbers.subListOfFirst(i).sumMinAndMax()
                 sum > sumTo -> break@summerLoop
             }
         }
@@ -23,19 +21,13 @@ fun part2(input: List<ULong> = realInput.parsed, sumTo: ULong = 138879426u): ULo
 fun part1(input: List<ULong> = realInput.parsed, preambleSize: UInt = 25u): ULong {
     return input.asSequence()
         .drop(preambleSize.toInt())
-        .withIndex() // TODO optimize
-        .first { (index, num) -> !isValid(num, input.subListTillEnd(index)) }
-        .value
+        .firstIndexed { index, num -> !isValid(num, input.subListTillEndFrom(index)) }
 }
 
 fun isValid(num: ULong, list: List<ULong>): Boolean {
-    outer@ for (n1 in list) {
-        if (n1 > num) continue
-        for (n2 in list) {
-            if (n2 + n1 == num) return true
-        }
+    return list.any { n1 ->
+        n1 < num && list.any { n2 -> n2 + n1 == num }
     }
-    return false
 }
 
 val String.parsed get() = splitToSequence('\n').map { it.toULong() }.toList()
