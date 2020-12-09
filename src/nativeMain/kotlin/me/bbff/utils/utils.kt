@@ -44,3 +44,25 @@ fun CharSequence.toSet(): Set<Char> = buildSet {
     for (ch in this@toSet)
         add(ch)
 }
+
+fun <T> List<T>.subListTillEnd(fromIndex: Int) = subList(fromIndex, size)
+fun <T> List<T>.subListOfFirst(n: Int) = subList(0, n + 1)
+
+fun <T : Comparable<T>> Iterable<T>.findMinMax(): Pair<T, T> {
+    val iterator = iterator()
+    var min = iterator.next()
+    var max = min
+
+    while (iterator.hasNext()) {
+        val v = iterator.next()
+        when {
+            v < min -> min = v
+            v > max -> max = v
+        }
+    }
+    return min to max
+}
+
+fun Iterable<ULong>.sumMinAndMax(): ULong {
+    return findMinMax().let { (min, max) -> min + max }
+}
