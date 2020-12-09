@@ -1107,4 +1107,3 @@ fun part2(data: Sequence<Sequence<Pair<String, String>>> = people): UInt {
     }
 }
 
-

@@ -18,10 +18,36 @@ val defaultPart2Sequence = sequenceOf(
     Slope(1u, 2u)
 )
 
-fun part2(slopes: Sequence<Slope> = defaultPart2Sequence, map: Map = Map.ofRawInput): ULong {
+fun part2(slopes: Sequence<Slope> = defaultPart2Sequence, map: Map = Map.ofRawInput): UInt {
     return slopes
         .map { slope -> part1(slope, map) }
         .multiply()
+}
+
+fun partTwoThree(x: MutableList<String> = rawInput.splitToSequence('\n').toMutableList()): Long {
+    return countDiagonalTrees(1, 1, x) *
+            countDiagonalTrees(3, 1, x) *
+            countDiagonalTrees(5, 1, x) *
+            countDiagonalTrees(7, 1, x) *
+            countDiagonalTrees(1, 2, x)
+}
+
+fun countDiagonalTrees(x: Int, y: Int, model: MutableList<String>): Long {
+    var curX = 0
+    var curY = 0
+    var curSum: Long = 0
+
+    while (curY < model.size) {
+        curX += x
+        curY += y
+
+        while (curX >= model[curY].length) model[curY] += model[curY]
+
+        if (model[curY][curX] == '#') {
+            curSum++
+        }
+    }
+    return curSum
 }
 
 const val rawInput = """..#..#......###.#...#......#..#

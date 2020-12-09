@@ -4,28 +4,21 @@ val shinyGold = "shiny gold"
 
 fun part1(input: Map<String, Map<String, UInt>> = rawInput.parsed): UInt {
     val canHoldShiny: MutableMap<String, Boolean> = mutableMapOf()
-    fun canHoldShiny(key: String): Boolean {
-        return when (val can = canHoldShiny[key]) {
-            null -> (input[key]?.any { (key) -> key == shinyGold || canHoldShiny(key) } ?: false)
-                .also { canHoldShiny[key] = it }
-            else -> can
-        }
+    fun canHoldShiny(key: String): Boolean = when (val can = canHoldShiny[key]) {
+        null -> (input[key]?.any { (key) -> key == shinyGold || canHoldShiny(key) } ?: false)
+            .also { canHoldShiny[key] = it }
+        else -> can
     }
     return input.keys.count { canHoldShiny(it) }.toUInt()
 }
 
 fun part2(input: Map<String, Map<String, UInt>> = rawInput.parsed): UInt {
     val cache = mutableMapOf<String, UInt>()
-    fun getCountInside(key: String): UInt {
-        return when (val cached = cache[key]) {
-            null -> (input[key]?.entries?.sumOf { (innerKey, count) ->
-                when {
-                    count != 0u -> (count * (getCountInside(innerKey) + 1u))
-                    else -> 0u
-                }
-            } ?: 0u).also { cache[key] = it }
-            else -> cached
-        }
+    fun getCountInside(key: String): UInt = when (val cached = cache[key]) {
+        null -> (input[key]?.entries?.sumOf { (innerKey, count) ->
+            count * (getCountInside(innerKey) + 1u)
+        } ?: 0u).also { cache[key] = it }
+        else -> cached
     }
     return getCountInside(shinyGold)
 }
@@ -37,7 +30,7 @@ val String.parsed
                 definition.name,
                 definition.substringAfter("contain ")
                     .splitToSequence(',')
-                    .mapNotNull { it.countAndName } // TODO nicerize
+                    .mapNotNull { it.nameAndCount } // TODO nicerize
                     .toMap()
             )
         }
@@ -46,7 +39,7 @@ val nameAndCountRegex = """\s*(\d+) (\w+ \w+) bag(?:s)?""".toRegex()
 val noOtherRegex = """\s*no other bags""".toRegex()
 
 val String.name get() = substringBefore(" bag")
-val String.countAndName
+val String.nameAndCount
     get() = when {
         noOtherRegex.matches(this) -> null
         else -> nameAndCountRegex.matchEntire(this)!!.groupValues

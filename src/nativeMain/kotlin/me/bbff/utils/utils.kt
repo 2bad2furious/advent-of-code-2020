@@ -16,7 +16,7 @@ operator fun String.get(ui: UInt): Char {
     return get(ui.toInt())
 }
 
-fun Sequence<UInt>.multiply(): ULong = fold(1uL) { acc, uInt -> acc * uInt }
+fun Sequence<UInt>.multiply(): UInt = reduce { acc, uInt -> acc * uInt }
 
 fun <T, R> Sequence<T>.reduceWithFirstAsAccumulator(initial: (T) -> R, operation: (R, T) -> Unit): R? {
     val iterator = iterator()
