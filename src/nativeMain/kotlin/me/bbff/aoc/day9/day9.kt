@@ -19,9 +19,10 @@ fun part2(input: List<ULong> = realInput.parsed, sumTo: ULong = 138879426u): ULo
 }
 
 fun part1(input: List<ULong> = realInput.parsed, preambleSize: UInt = 25u): ULong {
+    val preambleSigned = preambleSize.toInt()
     return input.asSequence()
-        .drop(preambleSize.toInt())
-        .firstIndexed { index, num -> !isValid(num, input.subListTillEndFrom(index)) }
+        .drop(preambleSigned)
+        .firstIndexed { index, num -> !isValid(num, input.subList(index, index + preambleSigned)) }
 }
 
 fun isValid(num: ULong, list: List<ULong>): Boolean {
