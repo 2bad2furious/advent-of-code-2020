@@ -75,3 +75,8 @@ fun <T> List<T>.shrinkingListsRight(): Sequence<List<T>> = sequence {
 
 // TODO optimize - no need to create indexedValue, which "filterIndexed" does
 fun <T> Sequence<T>.firstIndexed(predicate: (Int, T) -> Boolean): T = filterIndexed(predicate).first()
+
+inline fun <K, V> MutableMap<K, V>.getValueAndSet(key: K, newValue: (V) -> V) {
+    val old = this.getValue(key)
+    this[key] = newValue(old)
+}
