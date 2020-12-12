@@ -2,7 +2,6 @@ package me.bbff.aoc.day10
 
 import me.bbff.utils.getValueAndSet
 
-
 fun part1(adapterDifferences: Sequence<UInt> = realInput.parsed): UInt {
     println(adapterDifferences.toList())
     val diffCounts = (1u..3u).associateWithTo(mutableMapOf()) { 0u }
