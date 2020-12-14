@@ -80,3 +80,13 @@ inline fun <K, V> MutableMap<K, V>.getValueAndSet(key: K, newValue: (V) -> V) {
     val old = this.getValue(key)
     this[key] = newValue(old)
 }
+
+operator fun Int.minus(other: UInt): Int = minus(other.toInt())
+operator fun Int.plus(other: UInt): Int = plus(other.toInt())
+operator fun Int.times(other: UInt): Int = times(other.toInt())
+operator fun Int.div(other: UInt): Int = div(other.toInt())
+
+fun Int.inRangeFromZeroTo(other: Int) = when {
+    this < 0 -> other - (-this % other)
+    else -> this % other
+}.toUInt()
