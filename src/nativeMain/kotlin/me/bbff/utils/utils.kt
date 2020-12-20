@@ -131,3 +131,23 @@ fun BitSet.toULong(): ULong {
     }
     return value
 }
+
+fun BitSet.toArray(): BooleanArray = BooleanArray(size) { get(it) }
+
+fun <V : Any> Sequence<kotlin.collections.IndexedValue<V?>>.filterNotNull(): Sequence<kotlin.collections.IndexedValue<V>> {
+    @Suppress("UNCHECKED_CAST")
+    return filter { it.value != null } as Sequence<kotlin.collections.IndexedValue<V>>
+}
+
+fun <K, V> Map<K, V>.keysForValue(v: V): Sequence<K> = sequence {
+    for ((k, value) in this@keysForValue)
+        if (value == v) yield(k)
+}
+
+fun BitSet.copy() = BitSet(size) { get(it) }
+fun BitSet.copyWithChangedBit(bit: Int, value: Boolean): BitSet = BitSet(size) {
+    when (it) {
+        bit -> value
+        else -> get(it)
+    }
+}

@@ -1,18 +1,53 @@
 package me.bbff.aoc.day14
 
-import me.bbff.utils.mapNotNull
-import me.bbff.utils.subListTillEndFrom
-import me.bbff.utils.toBitSet
-import me.bbff.utils.toULong
+import me.bbff.utils.*
 
-fun part1(memoryValues: Iterable<Map<ULong, ULong>> = realInput.parsed): ULong {
+data class Program(val mask: Map<UInt, Boolean?>, val values: Iterable<Pair<ULong, ULong>>)
+
+fun part1(memoryValues: Iterable<Program> = realInput.parsed): ULong {
     val memory = mutableMapOf<ULong, ULong>()
-    for (values in memoryValues)
-        memory.putAll(values)
+    for ((mask, values) in memoryValues) {
+        for ((pos, value) in values) {
+            memory[pos] = value.toBitSet().mapNotNull { i -> mask[i] }.toULong()
+        }
+    }
     return memory.values.sum()
 }
 
-val String.parsed: Iterable<Map<ULong, ULong>>
+fun part2(memoryValues: Iterable<Program> = realInput.parsed): ULong {
+    val memory = mutableMapOf<ULong, ULong>()
+    for ((mask, values) in memoryValues) {
+        for ((pos, value) in values) {
+            val posBitSet = pos.toBitSet()
+
+            for (truePos in mask.keysForValue(true))
+                posBitSet.set(truePos.toInt())
+
+            for (option in posBitSet.optionsFor(mask.keysForValue(null).toList()))
+                memory[option.toULong()] = value
+        }
+    }
+    return memory.values.sum()
+}
+
+fun BitSet.optionsFor(floatingBits: List<UInt>): Sequence<BitSet> = when {
+    floatingBits.isEmpty() -> sequenceOf()
+    else -> sequenceOf(this).optionsFor(floatingBits)
+}
+
+fun Sequence<BitSet>.optionsFor(floatingBits: List<UInt>): Sequence<BitSet> = flatMap {
+    val bit = floatingBits.first().toInt()
+    val options = sequenceOf(
+        it.copyWithChangedBit(bit, true),
+        it.copyWithChangedBit(bit, false)
+    )
+    when {
+        floatingBits.size > 1 -> options.optionsFor(floatingBits.subListTillEndFrom(1))
+        else -> options
+    }
+}
+
+val String.parsed: Iterable<Program>
     get() = splitToSequence("mask = ")
         .drop(1)
         .map {
@@ -20,29 +55,34 @@ val String.parsed: Iterable<Map<ULong, ULong>>
             val mask = parts[0]
                 .reversed()
                 .asSequence()
-                .withIndex()
-                .mapNotNull { (i, ch) ->
+                .map { ch ->
                     when (ch) {
-                        '0' -> i to false
-                        '1' -> i to true
+                        '0' -> false
+                        '1' -> true
                         else -> null
                     }
-                }.toMap()
-            parts.subListTillEndFrom(1)
-                .associate { s: String ->
+                }.withIndex()
+                .associate { (i, v) -> i.toUInt() to v }
+            val values = parts.subListTillEndFrom(1)
+                .map { s: String ->
                     val (_, position, decimalValue) = memoryRegex.matchEntire(s)!!.groupValues
-                    val v = decimalValue.toULong().toBitSet()
-                    Pair(position.toULong(), v.mapNotNull { i -> mask[i.toInt()] }.toULong())
+                    Pair(position.toULong(), decimalValue.toULong())
                 }
+            Program(mask, values)
         }.asIterable()
+
+
+val memoryRegex = """mem\[(\d+)\] = (\d+)""".toRegex()
 
 val simpleInput = """mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
 mem[8] = 11
 mem[7] = 101
 mem[8] = 0"""
 
-
-val memoryRegex = """mem\[(\d+)\] = (\d+)""".toRegex()
+val part2Input = """mask = 000000000000000000000000000000X1001X
+mem[42] = 100
+mask = 00000000000000000000000000000000X0XX
+mem[26] = 1"""
 
 val realInput = """mask = 00000X110010111111X000100XX01010000X
 mem[20690] = 435
