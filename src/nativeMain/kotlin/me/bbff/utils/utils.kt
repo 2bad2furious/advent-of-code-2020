@@ -47,6 +47,7 @@ fun CharSequence.toSet(): Set<Char> = buildSet {
 
 fun <T> List<T>.subListTillEndFrom(fromIndex: Int) = subList(fromIndex, size)
 fun <T> List<T>.subListOfFirst(n: Int) = subList(0, n + 1)
+fun <T> List<T>.subListOfLast(n: Int) = subList(size - n, size)
 
 fun <T : Comparable<T>> Iterable<T>.findMinMax(): Pair<T, T> {
     val iterator = iterator()
@@ -151,3 +152,5 @@ fun BitSet.copyWithChangedBit(bit: Int, value: Boolean): BitSet = BitSet(size) {
         else -> get(it)
     }
 }
+
+fun <T> List<T>.nextToLast() = this[lastIndex - 1]
