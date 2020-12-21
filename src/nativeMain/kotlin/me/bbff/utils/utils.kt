@@ -1,6 +1,7 @@
 package me.bbff.utils
 
-inline fun <T> Sequence<T>.countUnsigned(predicate: (T) -> Boolean): UInt {
+
+inline fun <T> Sequence<T>.countUnsigned(predicate: (T) -> Boolean = { true }): UInt {
     var count = 0u
     for (element in this) if (predicate(element)) ++count
     return count
@@ -154,3 +155,13 @@ fun BitSet.copyWithChangedBit(bit: Int, value: Boolean): BitSet = BitSet(size) {
 }
 
 fun <T> List<T>.nextToLast() = this[lastIndex - 1]
+
+data class Coordinate2D(val x: Int, val y: Int)
+
+inline fun Coordinate2D.to3D(z: Int): Coordinate3D = Coordinate3D(x, y, z)
+inline fun Coordinate2D.to4D(z: Int, w: Int): Coordinate4D = Coordinate4D(x, y, z, w)
+
+data class Coordinate3D(val x: Int, val y: Int, val z: Int)
+data class Coordinate4D(val x: Int, val y: Int, val z: Int, val w: Int)
+
+inline fun Coordinate4D.as3D(): Coordinate3D = Coordinate3D(x, y, z)
