@@ -1,21 +1,19 @@
 package me.bbff.aoc.day17
 
-import me.bbff.utils.Coordinate2D
 import me.bbff.utils.Coordinate3D
 import me.bbff.utils.Coordinate4D
 
 
-val String.parsed: Sequence<Coordinate2D>
-    get() = splitToSequence('\n')
-        .mapIndexed { y, line ->
-            line.asSequence()
-                .mapIndexedNotNull { x: Int, c: Char ->
-                    when (c) {
-                        '#' -> Coordinate2D(x, y)
-                        else -> null
-                    }
+inline fun <R> String.parse(crossinline block: (x: Int, y: Int) -> R): Sequence<R> = splitToSequence('\n')
+    .mapIndexed { y, line ->
+        line.asSequence()
+            .mapIndexedNotNull { x: Int, c: Char ->
+                when (c) {
+                    '#' -> block(x, y)
+                    else -> null
                 }
-        }.flatten()
+            }
+    }.flatten()
 
 suspend fun SequenceScope<Coordinate3D>.neighbors(coordinate: Coordinate3D) {
     for (x in -1..1)

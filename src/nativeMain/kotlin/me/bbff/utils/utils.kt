@@ -165,3 +165,19 @@ data class Coordinate3D(val x: Int, val y: Int, val z: Int)
 data class Coordinate4D(val x: Int, val y: Int, val z: Int, val w: Int)
 
 inline fun Coordinate4D.as3D(): Coordinate3D = Coordinate3D(x, y, z)
+fun <R> Sequence<R>.isCountInRange(range: UIntRange): Boolean {
+    var wasInRange = 0u in range
+    var counter = 0u
+
+    for (e in this) {
+        counter++
+        when {
+            wasInRange && counter !in range -> return false
+            !wasInRange && counter in range -> wasInRange = true
+        }
+    }
+    return wasInRange
+}
+
+fun <R> Sequence<R>.countEq(count: UInt): Boolean = isCountInRange(count..count)
+

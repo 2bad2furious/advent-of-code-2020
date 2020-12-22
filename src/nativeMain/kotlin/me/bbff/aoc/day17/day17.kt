@@ -6,10 +6,10 @@ fun <C> PocketDimension<C>.play(): UInt {
     repeat(6) {
         val toChange = mutableMapOf<C, Boolean>()
         for ((coord, active) in allRelevant) {
-            val count = getNeighborValues(coord).count { it }
+            val activeAround = getNeighborValues(coord).filter { it }
             when {
-                active && count !in 2..3 -> toChange[coord] = false
-                !active && count == 3 -> toChange[coord] = true
+                active && !activeAround.isCountInRange(2u..3u) -> toChange[coord] = false
+                !active && activeAround.countEq(3u) -> toChange[coord] = true
             }
         }
         for ((coord, active) in toChange)
@@ -19,13 +19,13 @@ fun <C> PocketDimension<C>.play(): UInt {
 }
 
 
-fun part1(input: Sequence<Coordinate2D> = realInput.parsed): UInt {
-    val pocketDimension = PocketDimension(input.map { it.to3D(0) }, SequenceScope<Coordinate3D>::neighbors)
+fun part1(input: Sequence<Coordinate3D> = realInput.parse { x, y -> Coordinate3D(x, y, 0) }): UInt {
+    val pocketDimension = PocketDimension(input, SequenceScope<Coordinate3D>::neighbors)
     return pocketDimension.play()
 }
 
-fun part2(input: Sequence<Coordinate2D> = realInput.parsed): UInt {
-    val pocketDimension = PocketDimension(input.map { it.to4D(0, 0) }, SequenceScope<Coordinate4D>::neighbors)
+fun part2(input: Sequence<Coordinate4D> = realInput.parse { x, y -> Coordinate4D(x, y, 0, 0) }): UInt {
+    val pocketDimension = PocketDimension(input, SequenceScope<Coordinate4D>::neighbors)
     return pocketDimension.play()
 }
 
