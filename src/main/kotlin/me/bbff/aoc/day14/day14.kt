@@ -1,6 +1,7 @@
 package me.bbff.aoc.day14
 
 import me.bbff.utils.*
+import java.util.*
 
 data class Program(val mask: Map<UInt, Boolean?>, val values: Iterable<Pair<ULong, ULong>>)
 
@@ -36,7 +37,7 @@ fun BitSet.optionsFor(floatingBits: List<UInt>): Sequence<BitSet> = when {
 }
 
 fun Sequence<BitSet>.optionsFor(floatingBits: List<UInt>): Sequence<BitSet> = flatMap {
-    val bit = floatingBits.first().toInt()
+    val bit = floatingBits.first()
     val options = sequenceOf(
         it.copyWithChangedBit(bit, true),
         it.copyWithChangedBit(bit, false)

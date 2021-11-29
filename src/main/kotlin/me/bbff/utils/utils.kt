@@ -1,5 +1,9 @@
 package me.bbff.utils
 
+import java.io.File
+import java.time.Year
+import java.util.*
+
 
 inline fun <T> Sequence<T>.countUnsigned(predicate: (T) -> Boolean = { true }): UInt {
     var count = 0u
@@ -124,17 +128,26 @@ fun ULong.toBitSet(): BitSet {
     return bits
 }
 
-fun BitSet.mapNotNull(block: (UInt) -> Boolean?): BitSet = BitSet(size) { block(it.toUInt()) ?: get(it) }
+inline fun BitSet(length: Int, block: (UInt) -> Boolean): BitSet = BitSet(length.toUInt(), block)
+inline fun BitSet(length: UInt, block: (UInt) -> Boolean): BitSet {
+    val bs = BitSet(length.toInt())
+    for (i in 0u..length){
+        bs[i.toInt()] = block(i)
+    }
+    return bs
+}
+
+inline fun BitSet.mapNotNull(block: (UInt) -> Boolean?): BitSet =  BitSet(length()) { block(it) ?: get(it.toInt()) }
 
 fun BitSet.toULong(): ULong {
     var value = 0uL
-    for (i in 0 until size) {
+    for (i in 0 until length()) {
         if (get(i)) value += 1uL shl i
     }
     return value
 }
 
-fun BitSet.toArray(): BooleanArray = BooleanArray(size) { get(it) }
+fun BitSet.toArray(): BooleanArray = BooleanArray(length()) { get(it) }
 
 fun <V : Any> Sequence<kotlin.collections.IndexedValue<V?>>.filterNotNull(): Sequence<kotlin.collections.IndexedValue<V>> {
     @Suppress("UNCHECKED_CAST")
@@ -145,9 +158,9 @@ fun <K, V> Map<K, V>.keysForValue(v: V): Sequence<K> = sequence {
     for ((k, value) in this@keysForValue)
         if (value == v) yield(k)
 }
-
-fun BitSet.copy() = BitSet(size) { get(it) }
-fun BitSet.copyWithChangedBit(bit: Int, value: Boolean): BitSet = BitSet(size) {
+inline operator fun BitSet.get(index: UInt): Boolean = get(index.toInt())
+fun BitSet.copy() = BitSet(length()) { get(it) }
+fun BitSet.copyWithChangedBit(bit: UInt, value: Boolean): BitSet = BitSet(length()) {
     when (it) {
         bit -> value
         else -> get(it)
@@ -181,3 +194,4 @@ fun <R> Sequence<R>.isCountInRange(range: UIntRange): Boolean {
 
 fun <R> Sequence<R>.countEq(count: UInt): Boolean = isCountInRange(count..count)
 
+fun getAocFile(year: Year, day: Int) = File("assets/aoc/$year/day$day.txt")
